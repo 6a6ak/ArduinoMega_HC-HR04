@@ -11,7 +11,7 @@
       "left": 189.43,
       "attrs": { "color": "red" }
     },
-    { "type": "wokwi-hc-sr04", "id": "ultrasonic1", "top": 87.9, "left": -90.5, "attrs": {} }
+    { "type": "wokwi-hc-sr04", "id": "ultrasonic1", "top": 87.9, "left": -90.5, "attrs": { "distance": "23"} }
   ],
   "connections": [
     [ "ultrasonic1:GND", "mega:GND.3", "black", [ "v19.2", "h133.2" ] ],
