@@ -1,14 +1,15 @@
+#define F_CPU 16000000UL
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdlib.h>
 
-#define F_CPU 16000000UL
+// UART config
 #define BAUD 9600
 #define MYUBRR (F_CPU/16/BAUD - 1)
 
-// --- Mega pins ---
-#define TRIG_PIN PE4  // Arduino pin 2
-#define ECHO_PIN PE5  // Arduino pin 3
+// HC-SR04 pins on Arduino Mega
+#define TRIG_PIN PE4  // pin 2
+#define ECHO_PIN PE5  // pin 3
 
 void uart_init(unsigned int ubrr) {
     UBRR0H = (unsigned char)(ubrr >> 8);
@@ -29,30 +30,50 @@ void uart_print(const char* str) {
 }
 
 uint16_t read_distance_cm() {
+    // Send 10µs pulse to trigger
     PORTE &= ~(1 << TRIG_PIN);
     _delay_us(2);
     PORTE |= (1 << TRIG_PIN);
     _delay_us(10);
     PORTE &= ~(1 << TRIG_PIN);
 
-    while (!(PINE & (1 << ECHO_PIN)));
-
-    uint32_t count = 0;
-    while (PINE & (1 << ECHO_PIN)) {
-        _delay_us(1);
-        count++;
-        if (count > 30000) break;
+    // Wait for ECHO to go HIGH
+    uint32_t timeout = 0;
+    while (!(PINE & (1 << ECHO_PIN))) {
+        if (++timeout > 60000) return 0; // timeout safety
     }
 
-    return (uint16_t)(count * 0.034 / 2);
+    // Start timer (Timer1, Prescaler 8)
+    TCCR1A = 0;
+    TCCR1B = (1 << CS11); // Prescaler 8
+    TCNT1 = 0;
+
+    // Wait for ECHO to go LOW
+    timeout = 0;
+    while (PINE & (1 << ECHO_PIN)) {
+        if (++timeout > 60000) break;
+    }
+
+    // Stop timer
+    TCCR1B = 0;
+
+    uint16_t ticks = TCNT1;
+    // Each tick = 0.5us (16MHz / 8 prescaler)
+    uint32_t duration_us = ticks / 2;
+
+    // Convert to cm (distance = (time in us) * 0.034 / 2)
+    return (uint16_t)(duration_us * 0.034 / 2);
 }
 
 int main(void) {
+    // Configure TRIG as output, ECHO as input
     DDRE |= (1 << TRIG_PIN);
     DDRE &= ~(1 << ECHO_PIN);
 
+    // Initialize UART
     uart_init(MYUBRR);
 
+    // Buffer for printing
     char buffer[16];
     uint16_t distance;
 
