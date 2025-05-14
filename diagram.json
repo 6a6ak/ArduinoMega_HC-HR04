@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-mega", "id": "mega", "top": -124.2, "left": -32.4, "attrs": {} },
+    {
+      "type": "wokwi-tm1637-7segment",
+      "id": "sevseg1",
+      "top": 95.96,
+      "left": 189.43,
+      "attrs": { "color": "red" }
+    },
+    { "type": "wokwi-hc-sr04", "id": "ultrasonic1", "top": 87.9, "left": -90.5, "attrs": {} }
+  ],
+  "connections": [
+    [ "ultrasonic1:GND", "mega:GND.3", "black", [ "v19.2", "h133.2" ] ],
+    [ "ultrasonic1:VCC", "mega:5V", "red", [ "v57.6", "h28.8" ] ],
+    [ "ultrasonic1:TRIG", "mega:2", "green", [ "v38.4", "h-106", "v-384", "h316.8" ] ],
+    [ "ultrasonic1:ECHO", "mega:3", "blue", [ "v48", "h-106.4", "v-384", "h297.6" ] ],
+    [ "sevseg1:GND", "mega:GND.3", "black", [ "h0", "v48", "h-220.8" ] ],
+    [ "sevseg1:VCC", "mega:5V", "red", [ "h19.2", "v48", "h-268.8" ] ],
+    [ "sevseg1:DIO", "mega:6", "green", [ "h9.6", "v-316.8", "h-211.2" ] ],
+    [ "mega:7", "sevseg1:CLK", "gray", [ "v-86.4", "h245.6", "v19.2" ] ]
+  ],
+  "dependencies": {}
+}
