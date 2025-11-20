@@ -1,3 +1,5 @@
+![Simulator wiring](image.png)
+
 # Arduino Mega HC-SR04 + TM1637 4-digit Display
 
 This project reads distance from an HC-SR04 ultrasonic sensor using an Arduino Mega (ATmega2560) and displays the measured distance on a TM1637 4‑digit display. It also prints debugging information to UART (9600 baud).
